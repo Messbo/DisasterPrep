@@ -1,0 +1,39 @@
+#Original dataset -> Rainfall.csv
+#1)file_handler.py -> data.csv , final_data.csv
+#2)fetch_data.py -> WILL PREDICT using functions present in flood_prediction.py
+
+# the machine learning approach in your code is leveraging the Logis
+# tic Regression model to learn the underlying relationships between 
+# the rainfall data and the flood severity, potentially improving the 
+# prediction accuracy compared to a rule-based system. 
+
+def alert_based_on_rainfall(rain_mm):
+    if rain_mm < 20:
+        return "You are completely safe"
+    elif 20 <= rain_mm < 50:
+        return "Moderate rain falling, keep your umbrella with you, but you're safe"
+    elif 50 <= rain_mm < 100:
+        return "Heavy raining, chances of floods increasing. Please take necessary precautions"
+    else:
+        return "Flood chances are at peak. Stay in your house"
+
+#DOUBT - WHATS THE POINT OF THE MACHINE LEARNING THEN.
+
+
+# Yes, the addition of the noise factor in your code does make the relationship between rainfall and flood severity more complex and less straightforward compared to a simple rule-based approach like the `alert_based_on_rainfall` function.
+
+# Here's why the noise factor adds complexity:
+
+# 1. **Introducing Randomness**: The noise term `noise = 25 * np.random.normal(0, 0.45)` adds a random element to the rainfall values. This means that for the same underlying rainfall value, the resulting value used for classification can be different due to the random noise.
+
+# 2. **Blurring the Thresholds**: The noise term effectively "blurs" the clear thresholds used in the `alert_based_on_rainfall` function. Instead of having fixed thresholds at 20, 50, and 100 mm, the thresholds become less precise due to the added noise.
+
+# 3. **Non-Linear Relationships**: By introducing the noise term, the relationship between the raw rainfall values and the flood severity labels becomes more non-linear and complex. The simple linear mapping used in the `alert_based_on_rainfall` function is no longer sufficient.
+
+# 4. **Potential Overlaps**: With the added noise, there may be instances where the rainfall values around the thresholds (e.g., 50 mm) overlap between different flood severity classes. This can make it more challenging to distinguish the classes based on the rainfall data alone.
+
+# In the case of your code, the noise term is added to simulate the real-world complexities and uncertainties that may exist in the relationship between rainfall and flood severity. This is a common technique in machine learning to create more robust and generalized models that can handle noisy or imperfect data.
+
+# Compared to the rule-based `alert_based_on_rainfall` function, your approach with the machine learning model (Logistic Regression) has the potential to better capture these non-linear and complex relationships, as the model can learn from the training data and adapt to the noise and uncertainties present in the data.
+
+# So, in summary, yes, the addition of the noise factor does make the relationship between rainfall and flood severity more complex and less straightforward, which is why a machine learning approach can be beneficial in this scenario.
