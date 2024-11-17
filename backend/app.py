@@ -7,12 +7,12 @@ import os
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ml'))
 
 # Import the necessary functions from `fetch_data.py`
-from ml.fetch_data import alert, get_location
+from ml_floods.fetch_data import alert, get_location
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-@app.route('/get-data', methods=['GET'])
+@app.route('/get-data-floods', methods=['GET'])
 def get_data():
     try:
         # Get the location and alert from the ML code

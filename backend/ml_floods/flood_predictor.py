@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 lr=LogisticRegression(max_iter=1000)
-data=pd.read_csv("ml/final_data.csv")
+data=pd.read_csv("ml_floods/final_data.csv")
 data=np.array(data)
 data=data[:,1:]
 msk1 = np.random.rand(len(data)) < 0.7
