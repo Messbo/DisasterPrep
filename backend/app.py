@@ -4,7 +4,7 @@ import sys
 import os
 
 # Add the path to your `ml` directory to the system path
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ml'))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ml_floods'))
 
 # Import the necessary functions from `fetch_data.py`
 from ml_floods.fetch_data import alert, get_location
