@@ -15,19 +15,31 @@ CORS(app)  # Enable CORS for all routes
 @app.route('/get-data-floods', methods=['GET'])
 def get_data():
     try:
-        # Get the location and alert from the ML code
-        location = get_location()
-        alert_message = alert()
-        
-        # Respond with JSON
+        # Get weather and alert information
+        weather_data = alert()
+        if "error" in weather_data:
+            return jsonify({"error": weather_data["error"]}), 500
+
         response = {
-            "location": location,
-            "alert": alert_message
+            "location": get_location(),
+            "weather": {
+                "temperature": weather_data["temperature"],
+                "feels_like": weather_data["feels_like"],
+                "humidity": weather_data["humidity"],
+                "pressure": weather_data["pressure"],
+                "wind_speed": weather_data["wind_speed"],
+                "cloud_cover": weather_data["cloud_cover"],
+                "description": weather_data["description"],
+                "country": weather_data["country"],
+                "sunrise": weather_data["sunrise"],
+                "sunset": weather_data["sunset"]
+            },
+            "alert": weather_data["alert"]
         }
         return jsonify(response), 200
     except Exception as e:
-        # Handle exceptions gracefully
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     # Run the Flask server

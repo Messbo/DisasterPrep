@@ -68,7 +68,27 @@ def get_location():
     state_cur = g.state
     return state_cur.upper()
 
-def get_rain_from_api():
+# def get_rain_from_api():
+#     location = get_location()
+    
+#     # Use OpenWeather API to get weather data for a specific location
+#     url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={OPENWEATHER_API_KEY}&units=metric"
+    
+#     try:
+#         response = requests.get(url)
+#         response.raise_for_status()
+#         data = response.json()
+        
+#         print("Data from OpenWeather API:")
+# #         print(data)
+# #         # Extract rain data; OpenWeather reports rain in mm for the past 1 hour or 3 hours
+#         rain_data = data.get('rain', {}).get('1h', 0.0)  # 'rain' in mm for the past 1 hour
+#         return rain_data
+
+#     except requests.exceptions.RequestException as e:
+#         print(f"Error fetching data from OpenWeather API: {e}")
+#         return 0.0  # Return 0 if there's an error in fetching rain data
+def get_weather_from_api():
     location = get_location()
     
     # Use OpenWeather API to get weather data for a specific location
@@ -79,31 +99,63 @@ def get_rain_from_api():
         response.raise_for_status()
         data = response.json()
         
-        print("Data from OpenWeather API:")
-        print(data)
-        # Extract rain data; OpenWeather reports rain in mm for the past 1 hour or 3 hours
-        rain_data = data.get('rain', {}).get('1h', 0.0)  # 'rain' in mm for the past 1 hour
-        return rain_data
+        # Extract relevant weather data
+        weather_data = {
+            "rain": data.get('rain', {}).get('1h', 0.0),  # Rain in mm for the past 1 hour
+            "temperature": data.get('main', {}).get('temp'),
+            "feels_like": data.get('main', {}).get('feels_like'),
+            "humidity": data.get('main', {}).get('humidity'),
+            "pressure": data.get('main', {}).get('pressure'),
+            "wind_speed": data.get('wind', {}).get('speed'),
+            "cloud_cover": data.get('clouds', {}).get('all'),
+            "description": data.get('weather', [{}])[0].get('description'),
+            "country": data.get('sys', {}).get('country'),
+            "sunrise": data.get('sys', {}).get('sunrise'),
+            "sunset": data.get('sys', {}).get('sunset')
+        }
+        return weather_data
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from OpenWeather API: {e}")
-        return 0.0  # Return 0 if there's an error in fetching rain data
+        return None  # Return None if there's an error
+
 
 def predict():
     location = get_location()
     rain = get_rain_from_api()
     return fp.prediction1([[states[location], rain]])
 
+# def alert():
+#     var = predict()
+#     if var == 0:
+#         return "You are completely safe"
+#     elif var == 1:
+#         return "Moderate rain falling, keep your umbrella with you, but you're safe"
+#     elif var == 2:
+#         return "Heavy raining, chances of floods increasing. Please take necessary precautions"
+#     else:
+#         return "Flood chances are at peak. Stay in your house"
 def alert():
-    var = predict()
-    if var == 0:
-        return "You are completely safe"
-    elif var == 1:
-        return "Moderate rain falling, keep your umbrella with you, but you're safe"
-    elif var == 2:
-        return "Heavy raining, chances of floods increasing. Please take necessary precautions"
+    weather_data = get_weather_from_api()
+    if weather_data:
+        rain = weather_data["rain"]
+        var = fp.prediction1([[states[get_location()], rain]])
+        alert_message = ""
+
+        if var == 0:
+            alert_message = "You are completely safe."
+        elif var == 1:
+            alert_message = "Moderate rain falling, keep your umbrella with you, but you're safe."
+        elif var == 2:
+            alert_message = "Heavy raining, chances of floods increasing. Please take necessary precautions."
+        else:
+            alert_message = "Flood chances are at peak. Stay in your house."
+
+        weather_data["alert"] = alert_message
+        return weather_data
     else:
-        return "Flood chances are at peak. Stay in your house"
+        return {"error": "Could not fetch weather data."}
+
 
 # Example usage:
 print(alert())
